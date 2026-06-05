@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mr. Beans Cafe</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .menu-item-card {
+        position: relative;
+      }
+      .item-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: var(--accent-tan);
+        color: var(--coffee-dark);
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        z-index: 2;
+      }
+      .item-badge.popular {
+        background: #e74c3c;
+        color: #fff;
+      }
+      .item-badge.new {
+        background: #2ecc71;
+        color: #fff;
+      }
+
+      /* Cart FAB */
+      .cart-fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background-color: var(--coffee-dark);
+        color: var(--white);
+        border: none;
+        border-radius: 50px;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        z-index: 999;
+        box-shadow: 0 8px 25px rgba(42, 26, 18, 0.35);
+        transition: var(--transition-smooth);
+        transform: translateY(100px);
+        opacity: 0;
+      }
+      .cart-fab.visible {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .cart-fab:hover {
+        background-color: var(--accent-tan);
+        color: var(--coffee-dark);
+        transform: translateY(-3px);
+      }
+      .cart-fab .cart-count {
+        background-color: #e74c3c;
+        color: #fff;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      /* Cart Sidebar */
+      .cart-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1100;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+      .cart-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .cart-sidebar {
+        position: fixed;
+        top: 0;
+        right: -420px;
+        width: 400px;
+        max-width: 95vw;
+        height: 100vh;
+        background-color: var(--bg-creme);
+        z-index: 1200;
+        display: flex;
+        flex-direction: column;
+        box-shadow: -10px 0 40px rgba(42, 26, 18, 0.15);
+        transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .cart-sidebar.open {
+        right: 0;
+      }
+      .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 1.8rem;
+        border-bottom: 1px solid rgba(42, 26, 18, 0.08);
+        background: var(--white);
+      }
+      .cart-header h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.4rem;
+        color: var(--coffee-dark);
+      }
+      .cart-close {
+        background: none;
+        border: none;
+        font-size: 1.6rem;
+        cursor: pointer;
+        color: var(--coffee-dark);
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
+        transition: background 0.2s;
+      }
+      .cart-close:hover {
+        background: rgba(42, 26, 18, 0.07);
+      }
+      .cart-items {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.2rem 1.8rem;
+      }
+      .cart-empty {
+        text-align: center;
+        padding: 4rem 1rem;
+        color: #aaa;
+      }
+      .cart-empty .empty-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+      }
+      .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: var(--white);
+        border-radius: 12px;
+        padding: 0.9rem 1rem;
+        margin-bottom: 0.8rem;
+        box-shadow: 0 3px 10px rgba(42, 26, 18, 0.04);
+        animation: slideIn 0.3s ease;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .cart-item img {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+      .cart-item-info {
+        flex: 1;
+      }
+      .cart-item-info h5 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--coffee-dark);
+        margin-bottom: 0.2rem;
+      }
+      .cart-item-info .item-price {
+        font-size: 0.85rem;
+        color: var(--accent-tan);
+        font-weight: 600;
+      }
+      .qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .qty-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 1.5px solid var(--accent-tan);
+        background: none;
+        color: var(--coffee-dark);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition-smooth);
+      }
+      .qty-btn:hover {
+        background: var(--accent-tan);
+        color: var(--white);
+      }
+      .qty-num {
+        font-weight: 700;
+        font-size: 0.95rem;
+        min-width: 20px;
+        text-align: center;
+      }
+      .remove-btn {
+        background: none;
+        border: none;
+        font-size: 1.1rem;
+        cursor: pointer;
+        color: #ccc;
+        transition: color 0.2s;
+      }
+      .remove-btn:hover {
+        color: #e74c3c;
+      }
+      .cart-footer {
+        background: var(--white);
+        padding: 1.5rem 1.8rem;
+        border-top: 1px solid rgba(42, 26, 18, 0.08);
+      }
+      .cart-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.2rem;
+      }
+      .cart-total-row span {
+        font-size: 0.95rem;
+        color: #888;
+      }
+      .cart-total-row strong {
+        font-size: 1.3rem;
+        font-family: "Playfair Display", serif;
+        color: var(--coffee-dark);
+      }
+      .btn-checkout {
+        width: 100%;
+        padding: 1rem;
+        background-color: var(--accent-tan);
+        color: var(--coffee-dark);
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+      }
+      .btn-checkout:hover {
+        background-color: var(--coffee-dark);
+        color: var(--white);
+        transform: translateY(-2px);
+      }
+      .btn-clear-cart {
+        width: 100%;
+        padding: 0.7rem;
+        background: none;
+        border: 1px solid rgba(42, 26, 18, 0.15);
+        border-radius: 10px;
+        font-size: 0.85rem;
+        color: #999;
+        cursor: pointer;
+        margin-top: 0.6rem;
+        transition: all 0.2s;
+      }
+      .btn-clear-cart:hover {
+        border-color: #e74c3c;
+        color: #e74c3c;
+      }
+      .add-btn.added {
+        animation: pulse-add 0.4s ease;
+        background-color: #2ecc71 !important;
+      }
+      @keyframes pulse-add {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.3);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo-container">
+          <span style="font-size: 1.8rem">☕</span>
+          <span class="logo-text">Mr. Beans</span>
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="menu.html">Menu</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li class="lang-dropdown">
+            <div class="lang-select" id="langSelectBtn">
+              <span id="currentlang">🇮🇩 ID</span> <span class="arrow">▾</span>
+            </div>
+            <ul class="dropdown-menu" id="langDropdownMenu">
+              <li data-lang="id">🇮🇩 ID</li>
+              <li data-lang="en">🇬🇧 EN</li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <span class="hero-sub">Good Coffee, Good Day</span>
+      <h1>Enjoy Your<br />Perfect Cup of Coffee</h1>
+      <p>
+        Mr. Beans Cafe hadir untuk memberikan pengalaman terbaik dengan kopi
+        berkualitas dan rasa nyaman.
+      </p>
+      <div class="hero-buttons">
+        <a href="menu.html" class="btn-filled">Explore Menu</a>
+        <a href="menu.html#reservasi" class="btn-outline">Reserve a Table</a>
+      </div>
+    </section>
+
+    <div class="floating-info reveal">
+      <div class="info-item">
+        <div class="info-icon">☕</div>
+        <div class="info-text">
+          <h4>Premium Beans</h4>
+          <p>High quality coffee beans.</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">🪑</div>
+        <div class="info-text">
+          <h4>Cozy Place</h4>
+          <p>Comfortable atmosphere.</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">🍴</div>
+        <div class="info-text">
+          <h4>Delicious Food</h4>
+          <p>Fresh and tasty menu.</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">🤝</div>
+        <div class="info-text">
+          <h4>Friendly Service</h4>
+          <p>Best service experience.</p>
+        </div>
+      </div>
+    </div>
+
+    <section class="menu-section reveal">
+      <span class="sub-title">Our Favorite</span>
+      <h2>Popular Menu</h2>
+
+      <div class="menu-grid-layout" id="menu-container">
+        <div
+          class="menu-item-card"
+          data-category="coffee"
+          data-name="Cappucino"
+          data-price="45000"
+          data-img="https://images.unsplash.com/photo-1534778101976-62847782c213?q=80&w=500&auto=format&fit=crop"
+          style="position: relative"
+        >
+          <span class="item-badge popular">Popular</span>
+          <img
+            src="https://images.unsplash.com/photo-1534778101976-62847782c213?q=80&w=500&auto=format&fit=crop"
+            alt="Cappucino"
+          />
+          <div class="card-body">
+            <div class="card-info">
+              <h4>Cappucino</h4>
+              <p>Rp45.000</p>
+            </div>
+            <button class="add-btn">+</button>
+          </div>
+        </div>
+
+        <div
+          class="menu-item-card"
+          data-category="coffee"
+          data-name="Iced Latte"
+          data-price="45000"
+          data-img="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=500&auto=format&fit=crop"
+          style="position: relative"
+        >
+          <span class="item-badge popular">Popular</span>
+          <img
+            src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=500&auto=format&fit=crop"
+            alt="Iced Latte"
+          />
+          <div class="card-body">
+            <div class="card-info">
+              <h4>Iced Latte</h4>
+              <p>Rp45.000</p>
+            </div>
+            <button class="add-btn">+</button>
+          </div>
+        </div>
+
+        <div
+          class="menu-item-card"
+          data-category="food"
+          data-name="Creamy Carbonara"
+          data-price="65000"
+          data-img="https://images.unsplash.com/photo-1546549032-9571cd6b27df?q=80&w=500&auto=format&fit=crop"
+          style="position: relative"
+        >
+          <span class="item-badge popular">Popular</span>
+          <img
+            src="https://images.unsplash.com/photo-1546549032-9571cd6b27df?q=80&w=500&auto=format&fit=crop"
+            alt="Creamy Carbonara"
+          />
+          <div class="card-body">
+            <div class="card-info">
+              <h4>Creamy Carbonara</h4>
+              <p>Rp65.000</p>
+            </div>
+            <button class="add-btn">+</button>
+          </div>
+        </div>
+
+        <div
+          class="menu-item-card"
+          data-category="dessert"
+          data-name="Chocolate Cake"
+          data-price="55000"
+          data-img="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=500&auto=format&fit=crop"
+          style="position: relative"
+        >
+          <span class="item-badge popular">Popular</span>
+          <img
+            src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=500&auto=format&fit=crop"
+            alt="Chocolate Cake"
+          />
+          <div class="card-body">
+            <div class="card-info">
+              <h4>Chocolate Cake</h4>
+              <p>Rp55.000</p>
+            </div>
+            <button class="add-btn">+</button>
+          </div>
+        </div>
+
+        <div
+          class="menu-item-card"
+          data-category="non-coffee"
+          data-name="Strawberry Matcha"
+          data-price="52000"
+          data-img="https://images.unsplash.com/photo-1536256263959-770b48d82b0a?q=80&w=500&auto=format&fit=crop"
+          style="position: relative"
+        >
+          <span class="item-badge popular">Popular</span>
+          <img
+            src="https://images.unsplash.com/photo-1536256263959-770b48d82b0a?q=80&w=500&auto=format&fit=crop"
+            alt="Strawberry Matcha"
+          />
+          <div class="card-body">
+            <div class="card-info">
+              <h4>Strawberry Matcha</h4>
+              <p>Rp52.000</p>
+            </div>
+            <button class="add-btn">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 3rem">
+        <a href="menu.html" class="btn-filled">Lihat Semua Menu →</a>
+      </div>
+    </section>
+
+    <footer id="contact">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>Mr. Beans Cafe</h3>
+          <p>
+            Menyajikan ruang ternyaman dan seduhan kopi dengan kualitas biji
+            terbaik langsung dari petani lokal.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h3>Hubungi Kami</h3>
+          <p>📞 +62 812-3456-7890</p>
+          <p>✉️ info@mrbeanscafe.com</p>
+          <p>📍 Jl. Kopi Hangat No. 12, Indonesia</p>
+        </div>
+        <div class="footer-col">
+          <h3>Jam Buka</h3>
+          <ul>
+            <li>Weekdays: 09.00 - 22.00</li>
+            <li>Weekends: 08.00 - 23.00</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Mr. Beans Cafe. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Cart FAB -->
+    <button class="cart-fab" id="cartFab">
+      🛒 <span id="cartFabLabel">Keranjang</span>
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+      <div class="cart-header">
+        <h3>🛒 Keranjang Anda</h3>
+        <button class="cart-close" id="cartClose">✕</button>
+      </div>
+      <div class="cart-items" id="cartItemsContainer">
+        <div class="cart-empty" id="cartEmpty">
+          <div class="empty-icon">🛒</div>
+          <p>Keranjang Anda masih kosong.<br />Yuk, pilih menu favoritmu!</p>
+        </div>
+      </div>
+      <div class="cart-footer" id="cartFooter" style="display: none">
+        <div class="cart-total-row">
+          <span>Total Pesanan</span>
+          <strong id="cartTotal">Rp0</strong>
+        </div>
+        <button class="btn-checkout" id="btnCheckout">Pesan Sekarang ✨</button>
+        <button class="btn-clear-cart" id="btnClearCart">Hapus Semua</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
