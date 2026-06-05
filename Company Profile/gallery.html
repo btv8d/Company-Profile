@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gallery - Mr. Beans Cafe</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo-container">
+          <span style="font-size: 1.8rem">☕</span>
+          <span class="logo-text">Mr. Beans</span>
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="menu.html">Menu</a></li>
+          <li><a href="gallery.html" class="active">Gallery</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li class="lang-dropdown">
+            <div class="lang-select" id="langSelectBtn">
+              <span id="currentLang">🇮🇩 ID</span> <span class="arrow">▾</span>
+            </div>
+            <ul class="dropdown-menu" id="langDropdownMenu">
+              <li data-lang="id">🇮🇩 ID</li>
+              <li data-lang="en">🇬🇧 EN</li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <div
+      class="container"
+      style="max-width: 1100px; margin: 6rem auto; padding: 0 1rem"
+    >
+      <span
+        style="
+          font-family: &quot;Playfair Display&quot;, serif;
+          font-style: italic;
+          color: var(--accent-tan);
+          display: block;
+          text-align: center;
+        "
+        >@mrbeans.cafe</span
+      >
+      <h2
+        style="
+          font-family: &quot;Playfair Display&quot;, serif;
+          font-size: 2.5rem;
+          text-align: center;
+          margin-bottom: 3rem;
+        "
+      >
+        Our Gallery
+      </h2>
+
+      <div class="instagram-grid reveal">
+        <div class="instagram-item">
+          <img
+            src="https://images.unsplash.com/photo-1498804103079-a6351b050096?q=80&w=500&auto=format&fit=crop"
+            alt="Latte Art"
+          />
+        </div>
+        <div class="instagram-item">
+          <img
+            src="https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=500&auto=format&fit=crop"
+            alt="Pour Over"
+          />
+        </div>
+        <div class="instagram-item">
+          <img
+            src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=500&auto=format&fit=crop"
+            alt="Atmosphere"
+          />
+        </div>
+        <div class="instagram-item">
+          <img
+            src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=500&auto=format&fit=crop"
+            alt="Coffee Cup"
+          />
+        </div>
+        <div class="instagram-item">
+          <img
+            src="https://images.unsplash.com/photo-1525648199074-cee30ba79a4a?q=80&w=500&auto=format&fit=crop"
+            alt="Pastry Croissant"
+          />
+        </div>
+        <div class="instagram-item">
+          <img
+            src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=500&auto=format&fit=crop"
+            alt="Cafe Layout"
+          />
+        </div>
+      </div>
+    </div>
+
+    <footer id="contact">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>Mr. Beans Cafe</h3>
+          <p>
+            Menyajikan ruang ternyaman dan seduhan kopi dengan kualitas biji
+            terbaik langsung dari petani lokal.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h3>Hubungi Kami</h3>
+          <p>📞 +62 812-3456-7890</p>
+          <p>✉️ info@mrbeanscafe.com</p>
+          <p>📍 Jl. Kopi Hangat No. 12, Indonesia</p>
+        </div>
+        <div class="footer-col">
+          <h3>Jam Buka</h3>
+          <ul>
+            <li>Weekdays: 09.00 - 22.00</li>
+            <li>Weekends: 08.00 - 23.00</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Mr. Beans Cafe. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
